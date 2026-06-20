@@ -1,111 +1,84 @@
-from fastapi import HTTPException
+from datetime import datetime
 
-from app.models.models import Venta
+from app.exceptions import ClienteNoEncontrado
+from app.exceptions import StockInsuficiente
+from app.exceptions import VentaNoEncontrada
+from app.models.models import Caja, Cliente, DetalleVenta, Factura, MovimientoCaja, MovimientoInventario, Producto, Venta
+from app.repositories.venta_repository import VentaRepository
 
-from app.repositories.venta_repository import (
-    VentaRepository
-)
 
 repo = VentaRepository()
 
 
 class VentaService:
+    IVA_RATE = 0.15
 
-    def listar(self, db):
+    def listar(self, db, page=1, size=20, cliente=None, fecha_inicio=None, fecha_fin=None):
+        query = db.query(Venta).filter(Venta.activo.is_(True))
+        if cliente:
+            query = query.join(Cliente).filter(Cliente.nombre.ilike(f"%{cliente}%"))
+        if fecha_inicio:
+            query = query.filter(Venta.fecha >= datetime.fromisoformat(fecha_inicio))
+        if fecha_fin:
+            query = query.filter(Venta.fecha <= datetime.fromisoformat(fecha_fin))
+        total = query.count()
+        items = query.offset((page - 1) * size).limit(size).all()
+        return {"items": items, "total": total, "page": page, "size": size}
 
-        return repo.listar(db)
+    def obtener_por_id(self, db, venta_id):
+        venta = repo.obtener_por_id(db, venta_id)
+        if not venta or not venta.activo:
+            raise VentaNoEncontrada("Venta no encontrada")
+        return venta
 
-    def obtener_por_id(
-        self,
-        db,
-        venta_id
-    ):
+    def crear(self, db, payload):
+        cliente = db.query(Cliente).filter(Cliente.id == payload.cliente_id, Cliente.activo.is_(True)).first()
+        if not cliente:
+            raise ClienteNoEncontrado("Cliente no encontrado")
 
-        return repo.obtener_por_id(
-            db,
-            venta_id
-        )
+        caja = db.query(Caja).filter(Caja.estado == "ABIERTA", Caja.activo.is_(True)).first()
+        if not caja:
+            raise ValueError("No existe caja abierta")
 
-    def crear(
-        self,
-        db,
-        payload
-    ):
+        subtotal = 0.0
+        detalles = []
 
-        if payload.total <= 0:
+        for item in payload.detalles:
+            producto = db.query(Producto).filter(Producto.id == item.producto_id, Producto.activo.is_(True)).first()
+            if not producto:
+                raise ValueError("Producto no encontrado")
+            if producto.stock < item.cantidad:
+                raise StockInsuficiente("Stock insuficiente")
+            producto.stock -= item.cantidad
+            detalle_subtotal = producto.precio * item.cantidad
+            subtotal += detalle_subtotal
+            detalles.append((producto, item.cantidad, detalle_subtotal))
 
-            raise HTTPException(
-                status_code=400,
-                detail="El total debe ser mayor a cero"
-            )
+        iva = subtotal * self.IVA_RATE
+        total = subtotal + iva
 
-        venta = Venta(
-            cliente_id=payload.cliente_id,
-            total=payload.total
-        )
+        venta = Venta(cliente_id=payload.cliente_id, subtotal=subtotal, iva=iva, total=total)
+        db.add(venta)
+        db.flush()
 
-        return repo.crear(
-            db,
-            venta
-        )
+        for producto, cantidad, detalle_subtotal in detalles:
+            db.add(DetalleVenta(venta_id=venta.id, producto_id=producto.id, cantidad=cantidad, precio_unitario=producto.precio, subtotal=detalle_subtotal))
+            db.add(MovimientoInventario(producto_id=producto.id, tipo_movimiento="SALIDA_VENTA", cantidad=cantidad, observacion=f"Venta #{venta.id}"))
 
-    def actualizar(
-        self,
-        db,
-        venta_id,
-        payload
-    ):
+        db.add(Factura(venta_id=venta.id, numero_factura=f"F-{venta.id:08d}", subtotal=subtotal, iva=iva, total=total))
+        caja.saldo_final = (caja.saldo_final or caja.saldo_inicial) + total
+        db.add(MovimientoCaja(caja_id=caja.id, tipo_movimiento="INGRESO", monto=total, descripcion=f"Venta #{venta.id}"))
+        db.commit()
+        db.refresh(venta)
+        return venta
 
-        venta = repo.obtener_por_id(
-            db,
-            venta_id
-        )
-
-        if not venta:
-
-            raise HTTPException(
-                status_code=404,
-                detail="Venta no encontrada"
-            )
-
-        if payload.total <= 0:
-
-            raise HTTPException(
-                status_code=400,
-                detail="El total debe ser mayor a cero"
-            )
-
+    def actualizar(self, db, venta_id, payload):
+        venta = self.obtener_por_id(db, venta_id)
         venta.cliente_id = payload.cliente_id
-        venta.total = payload.total
+        db.commit()
+        db.refresh(venta)
+        return venta
 
-        return repo.actualizar(
-            db,
-            venta
-        )
-
-    def eliminar(
-        self,
-        db,
-        venta_id
-    ):
-
-        venta = repo.obtener_por_id(
-            db,
-            venta_id
-        )
-
-        if not venta:
-
-            raise HTTPException(
-                status_code=404,
-                detail="Venta no encontrada"
-            )
-
-        repo.eliminar(
-            db,
-            venta
-        )
-
-        return {
-            "mensaje": "Venta eliminada"
-        }
+    def eliminar(self, db, venta_id):
+        venta = self.obtener_por_id(db, venta_id)
+        return repo.eliminar(db, venta)
