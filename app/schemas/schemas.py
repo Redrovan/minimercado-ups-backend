@@ -97,3 +97,8 @@ class ProveedorUpdate(BaseModel):
     nombre: str
     telefono: str
     correo: str
+
+class VentaUpdate(BaseModel):
+
+    cliente_id: int
+    total: float

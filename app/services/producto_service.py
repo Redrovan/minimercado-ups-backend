@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from app.models.models import Producto
 from app.repositories.producto_repository import ProductoRepository
 
@@ -10,7 +12,52 @@ class ProductoService:
 
         return repo.listar(db)
 
-    def crear(self, db, payload):
+    def obtener_por_id(
+        self,
+        db,
+        producto_id
+    ):
+
+        producto = repo.obtener_por_id(
+            db,
+            producto_id
+        )
+
+        if not producto:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
+
+        return producto
+
+    def crear(
+        self,
+        db,
+        payload
+    ):
+
+        if payload.precio <= 0:
+
+            raise HTTPException(
+                status_code=400,
+                detail="El precio debe ser mayor a cero"
+            )
+
+        if payload.costo < 0:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Costo inválido"
+            )
+
+        if payload.stock < 0:
+
+            raise HTTPException(
+                status_code=400,
+                detail="El stock no puede ser negativo"
+            )
 
         producto = Producto(
             codigo_barras=payload.codigo_barras,
@@ -21,55 +68,86 @@ class ProductoService:
             stock=payload.stock
         )
 
-        return repo.crear(db, producto)
-    
-def obtener_por_id(self, db, producto_id):
+        return repo.crear(
+            db,
+            producto
+        )
 
-    return repo.obtener_por_id(db, producto_id)
+    def actualizar(
+        self,
+        db,
+        producto_id,
+        payload
+    ):
 
+        producto = repo.obtener_por_id(
+            db,
+            producto_id
+        )
 
-def eliminar(self, db, producto_id):
+        if not producto:
 
-    producto = repo.obtener_por_id(
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
+
+        if payload.precio <= 0:
+
+            raise HTTPException(
+                status_code=400,
+                detail="El precio debe ser mayor a cero"
+            )
+
+        if payload.costo < 0:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Costo inválido"
+            )
+
+        if payload.stock < 0:
+
+            raise HTTPException(
+                status_code=400,
+                detail="El stock no puede ser negativo"
+            )
+
+        producto.codigo_barras = payload.codigo_barras
+        producto.nombre = payload.nombre
+        producto.categoria = payload.categoria
+        producto.costo = payload.costo
+        producto.precio = payload.precio
+        producto.stock = payload.stock
+
+        return repo.actualizar(
+            db,
+            producto
+        )
+
+    def eliminar(
+        self,
         db,
         producto_id
-    )
+    ):
 
-    if not producto:
-        return None
+        producto = repo.obtener_por_id(
+            db,
+            producto_id
+        )
 
-    repo.eliminar(
-        db,
-        producto
-    )
+        if not producto:
 
-    return {
-        "mensaje": "Producto eliminado"
-    }
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
 
-def actualizar(
-    self,
-    db,
-    producto_id,
-    payload
-):
+        repo.eliminar(
+            db,
+            producto
+        )
 
-    producto = repo.obtener_por_id(
-        db,
-        producto_id
-    )
-
-    if not producto:
-        return None
-
-    producto.codigo_barras = payload.codigo_barras
-    producto.nombre = payload.nombre
-    producto.categoria = payload.categoria
-    producto.costo = payload.costo
-    producto.precio = payload.precio
-    producto.stock = payload.stock
-
-    return repo.actualizar(
-        db,
-        producto
-    )
+        return {
+            "mensaje": "Producto eliminado correctamente"
+        }

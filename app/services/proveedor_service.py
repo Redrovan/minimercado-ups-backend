@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from app.models.models import Proveedor
 
 from app.repositories.proveedor_repository import (
@@ -19,16 +21,46 @@ class ProveedorService:
         proveedor_id
     ):
 
-        return repo.obtener_por_id(
+        proveedor = repo.obtener_por_id(
             db,
             proveedor_id
         )
+
+        if not proveedor:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Proveedor no encontrado"
+            )
+
+        return proveedor
 
     def crear(
         self,
         db,
         payload
     ):
+
+        if len(payload.ruc) != 13:
+
+            raise HTTPException(
+                status_code=400,
+                detail="El RUC debe tener 13 dígitos"
+            )
+
+        if "@" not in payload.correo:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Correo inválido"
+            )
+
+        if len(payload.telefono) < 10:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Teléfono inválido"
+            )
 
         proveedor = Proveedor(
             ruc=payload.ruc,
@@ -55,7 +87,32 @@ class ProveedorService:
         )
 
         if not proveedor:
-            return None
+
+            raise HTTPException(
+                status_code=404,
+                detail="Proveedor no encontrado"
+            )
+
+        if len(payload.ruc) != 13:
+
+            raise HTTPException(
+                status_code=400,
+                detail="El RUC debe tener 13 dígitos"
+            )
+
+        if "@" not in payload.correo:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Correo inválido"
+            )
+
+        if len(payload.telefono) < 10:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Teléfono inválido"
+            )
 
         proveedor.ruc = payload.ruc
         proveedor.nombre = payload.nombre
@@ -79,7 +136,11 @@ class ProveedorService:
         )
 
         if not proveedor:
-            return None
+
+            raise HTTPException(
+                status_code=404,
+                detail="Proveedor no encontrado"
+            )
 
         repo.eliminar(
             db,
@@ -87,5 +148,5 @@ class ProveedorService:
         )
 
         return {
-            "mensaje": "Proveedor eliminado"
+            "mensaje": "Proveedor eliminado correctamente"
         }
