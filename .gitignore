@@ -1,0 +1,11 @@
+venv/
+
+**pycache**/
+*.pyc
+
+minimercado.db
+
+.idea/
+.vscode/
+
+.env
