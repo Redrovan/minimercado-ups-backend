@@ -12,6 +12,8 @@ from app.services.proveedor_service import ProveedorService
 
 from app.utils.dependencies import get_db
 
+from app.schemas.schemas import ProveedorUpdate
+
 router = APIRouter(
     prefix="/proveedores",
     tags=["Proveedores"]
@@ -41,3 +43,48 @@ def crear(
 ):
 
     return service.crear(db, payload)
+
+@router.get(
+    "/{proveedor_id}",
+    response_model=ProveedorResponse
+)
+def obtener_proveedor(
+    proveedor_id: int,
+    db: Session = Depends(get_db)
+):
+
+    return service.obtener_por_id(
+        db,
+        proveedor_id
+    )
+
+
+@router.put(
+    "/{proveedor_id}",
+    response_model=ProveedorResponse
+)
+def actualizar_proveedor(
+    proveedor_id: int,
+    payload: ProveedorUpdate,
+    db: Session = Depends(get_db)
+):
+
+    return service.actualizar(
+        db,
+        proveedor_id,
+        payload
+    )
+
+
+@router.delete(
+    "/{proveedor_id}"
+)
+def eliminar_proveedor(
+    proveedor_id: int,
+    db: Session = Depends(get_db)
+):
+
+    return service.eliminar(
+        db,
+        proveedor_id
+    )

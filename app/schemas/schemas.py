@@ -74,3 +74,26 @@ class VentaResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ProductoUpdate(BaseModel):
+
+    codigo_barras: str
+    nombre: str
+    categoria: str
+    costo: float
+    precio: float
+    stock: int
+
+class ClienteUpdate(BaseModel):
+
+    cedula: str
+    nombre: str
+    telefono: str
+    correo: str
+
+class ProveedorUpdate(BaseModel):
+
+    ruc: str
+    nombre: str
+    telefono: str
+    correo: str

@@ -46,3 +46,30 @@ def eliminar(self, db, producto_id):
     return {
         "mensaje": "Producto eliminado"
     }
+
+def actualizar(
+    self,
+    db,
+    producto_id,
+    payload
+):
+
+    producto = repo.obtener_por_id(
+        db,
+        producto_id
+    )
+
+    if not producto:
+        return None
+
+    producto.codigo_barras = payload.codigo_barras
+    producto.nombre = payload.nombre
+    producto.categoria = payload.categoria
+    producto.costo = payload.costo
+    producto.precio = payload.precio
+    producto.stock = payload.stock
+
+    return repo.actualizar(
+        db,
+        producto
+    )

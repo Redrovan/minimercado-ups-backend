@@ -12,6 +12,8 @@ from app.services.producto_service import ProductoService
 
 from app.utils.dependencies import get_db
 
+from app.schemas.schemas import ProductoUpdate
+
 router = APIRouter(
     prefix="/productos",
     tags=["Productos"]
@@ -68,4 +70,20 @@ def eliminar_producto(
     return service.eliminar(
         db,
         producto_id
+    )
+
+@router.put(
+    "/{producto_id}",
+    response_model=ProductoResponse
+)
+def actualizar_producto(
+    producto_id: int,
+    payload: ProductoUpdate,
+    db: Session = Depends(get_db)
+):
+
+    return service.actualizar(
+        db,
+        producto_id,
+        payload
     )
