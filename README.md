@@ -290,14 +290,6 @@ https://github.com/Redrovan/minimercado-ups-backend
 
 ---
 
-## Integrantes
-
-* Robinson Redrovan
-* Michael Franco
-* Bryan Mejía
-
----
-
 ## Conclusiones
 
 El desarrollo de este proyecto permitió aplicar conceptos fundamentales de Ingeniería de Software relacionados con diseño arquitectónico, desarrollo de APIs REST, persistencia de datos y documentación de servicios. La utilización de FastAPI facilitó la construcción de una API moderna y documentada automáticamente mediante Swagger. Además, la implementación de una arquitectura basada en modelos, repositorios, servicios y controladores permitió mantener una adecuada separación de responsabilidades y una mejor organización del código. Finalmente, el uso de Git y GitHub proporcionó un adecuado control de versiones y seguimiento del desarrollo del proyecto.
