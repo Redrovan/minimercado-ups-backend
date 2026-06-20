@@ -22,3 +22,27 @@ class ProductoService:
         )
 
         return repo.crear(db, producto)
+    
+def obtener_por_id(self, db, producto_id):
+
+    return repo.obtener_por_id(db, producto_id)
+
+
+def eliminar(self, db, producto_id):
+
+    producto = repo.obtener_por_id(
+        db,
+        producto_id
+    )
+
+    if not producto:
+        return None
+
+    repo.eliminar(
+        db,
+        producto
+    )
+
+    return {
+        "mensaje": "Producto eliminado"
+    }

@@ -7,6 +7,14 @@ class ProductoRepository:
 
         return db.query(Producto).all()
 
+    def obtener_por_id(self, db, producto_id):
+
+        return (
+            db.query(Producto)
+            .filter(Producto.id == producto_id)
+            .first()
+        )
+
     def crear(self, db, producto):
 
         db.add(producto)
@@ -14,3 +22,15 @@ class ProductoRepository:
         db.refresh(producto)
 
         return producto
+
+    def actualizar(self, db, producto):
+
+        db.commit()
+        db.refresh(producto)
+
+        return producto
+
+    def eliminar(self, db, producto):
+
+        db.delete(producto)
+        db.commit()

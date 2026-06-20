@@ -41,3 +41,31 @@ def crear(
 ):
 
     return service.crear(db, payload)
+
+@router.get(
+    "/{producto_id}",
+    response_model=ProductoResponse
+)
+def obtener_producto(
+    producto_id: int,
+    db: Session = Depends(get_db)
+):
+
+    return service.obtener_por_id(
+        db,
+        producto_id
+    )
+
+
+@router.delete(
+    "/{producto_id}"
+)
+def eliminar_producto(
+    producto_id: int,
+    db: Session = Depends(get_db)
+):
+
+    return service.eliminar(
+        db,
+        producto_id
+    )
