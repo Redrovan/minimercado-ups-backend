@@ -43,7 +43,7 @@ def seed_defaults(db: Session) -> None:
         db.add(
             Usuario(
                 username="admin",
-                email="admin@minimercado.local",
+                email="admin@minimercado.com",
                 password_hash=hash_password("Admin12345"),
                 rol_id=admin_role.id,
             )

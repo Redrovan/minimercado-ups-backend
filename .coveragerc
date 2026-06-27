@@ -1,0 +1,17 @@
+[run]
+source = app
+omit =
+    */__pycache__/*
+    */tests/*
+    */.venv/*
+
+[report]
+show_missing = True
+fail_under = 60
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if __name__ == .__main__.:
+    raise NotImplementedError
+    pass

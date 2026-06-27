@@ -1,3 +1,12 @@
+import bcrypt
+# Monkeypatch bcrypt to prevent ValueError with passwords > 72 bytes in passlib
+old_hashpw = bcrypt.hashpw
+def new_hashpw(password, salt):
+    if isinstance(password, bytes) and len(password) > 72:
+        password = password[:72]
+    return old_hashpw(password, salt)
+bcrypt.hashpw = new_hashpw
+
 from datetime import datetime, timedelta, timezone
 from typing import Any
 

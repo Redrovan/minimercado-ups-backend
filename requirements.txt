@@ -6,3 +6,6 @@ python-jose[cryptography]
 passlib[bcrypt]
 pytest
 httpx
+coverage
+mockito
+email-validator
