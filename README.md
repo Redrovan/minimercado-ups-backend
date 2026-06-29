@@ -6,90 +6,154 @@
 * Michael Franco
 * Bryan Mejía
 
-# Sistema de Gestión de Minimercado UPS
+---
 
-## Descripción General
+# Descripción General
 
-El Sistema de Gestión de Minimercado UPS es una aplicación backend desarrollada para administrar las operaciones básicas de un minimercado. El sistema permite gestionar productos, clientes, proveedores, ventas, inventario y reportes mediante una API REST construida con FastAPI.
+El Sistema de Gestión de Minimercado UPS es una aplicación backend desarrollada para administrar las operaciones de un minimercado mediante una API REST construida con **FastAPI**.
 
-La aplicación fue desarrollada aplicando conceptos de Ingeniería de Software, utilizando una arquitectura en capas que facilita el mantenimiento, escalabilidad y reutilización del código.
+El sistema permite gestionar:
+
+* Productos
+* Clientes
+* Proveedores
+* Usuarios
+* Roles
+* Ventas
+* Inventario
+* Caja
+* Reportes
+* Autenticación JWT
+
+La aplicación fue desarrollada aplicando principios de Ingeniería de Software mediante una arquitectura por capas (Models, Repositories, Services y Routes), facilitando el mantenimiento, escalabilidad y reutilización del código.
 
 ---
 
-## Objetivos del Proyecto
+# Objetivo General
 
-### Objetivo General
+Desarrollar una API REST para la administración integral de un minimercado utilizando FastAPI, SQLAlchemy y SQLite, aplicando buenas prácticas de desarrollo de software y pruebas automatizadas.
 
-Desarrollar una aplicación backend para la gestión de un minimercado utilizando herramientas y buenas prácticas de Ingeniería de Software.
+---
 
-### Objetivos Específicos
+# Objetivos Específicos
 
 * Implementar una API REST utilizando FastAPI.
-* Aplicar una arquitectura basada en modelos, repositorios, servicios y controladores.
-* Gestionar la persistencia de datos mediante SQLite y SQLAlchemy.
-* Documentar automáticamente los servicios mediante Swagger/OpenAPI.
-* Utilizar Git y GitHub para el control de versiones y trabajo colaborativo.
+* Gestionar productos, clientes, proveedores, ventas e inventario.
+* Implementar autenticación mediante JWT.
+* Aplicar una arquitectura basada en capas.
+* Gestionar la persistencia mediante SQLAlchemy y SQLite.
+* Documentar automáticamente la API mediante Swagger/OpenAPI.
+* Implementar pruebas unitarias utilizando diferentes frameworks de testing.
+* Medir la cobertura del código mediante Coverage.py.
+* Utilizar Git y GitHub para el trabajo colaborativo.
 
 ---
 
-## Tecnologías Utilizadas
+# Tecnologías Utilizadas
 
-| Tecnología      | Descripción                               |
-| --------------- | ----------------------------------------- |
-| Python 3        | Lenguaje de programación principal        |
-| FastAPI         | Framework para el desarrollo de APIs REST |
-| SQLAlchemy      | ORM para acceso a la base de datos        |
-| SQLite          | Base de datos utilizada para persistencia |
-| Swagger/OpenAPI | Documentación automática de la API        |
-| Git             | Control de versiones                      |
-| GitHub          | Repositorio remoto del proyecto           |
+| Tecnología      | Uso                    |
+| --------------- | ---------------------- |
+| Python 3        | Lenguaje principal     |
+| FastAPI         | Framework Backend      |
+| SQLAlchemy      | ORM                    |
+| SQLite          | Base de datos          |
+| Pydantic        | Validación de datos    |
+| JWT             | Autenticación          |
+| Swagger/OpenAPI | Documentación          |
+| Git             | Control de versiones   |
+| GitHub          | Repositorio remoto     |
+| Pytest          | Pruebas unitarias      |
+| Unittest        | Pruebas unitarias      |
+| Doctest         | Validación de ejemplos |
+| Mockito         | Mocking                |
+| Coverage.py     | Cobertura de código    |
 
 ---
 
-## Arquitectura del Proyecto
+# Arquitectura del Proyecto
 
-El proyecto implementa una arquitectura por capas para separar responsabilidades y mejorar la mantenibilidad del sistema.
+El proyecto sigue una arquitectura en capas.
 
-### Model
+```
+Cliente
 
-Representa las entidades de la base de datos.
+↓
+
+Routes
+
+↓
+
+Services
+
+↓
+
+Repositories
+
+↓
+
+Models
+
+↓
+
+SQLite
+```
+
+Cada capa tiene responsabilidades claramente definidas.
+
+## Models
+
+Representan las entidades de la base de datos.
 
 Ejemplos:
 
 * Producto
 * Cliente
-* Proveedor
+* Usuario
+* Rol
 * Venta
-
-### Repository
-
-Encapsula las operaciones de acceso a datos.
-
-Funciones principales:
-
-* Consultar registros
-* Crear registros
-* Actualizar registros
-* Eliminar registros
-
-### Service
-
-Contiene la lógica de negocio y validaciones.
-
-Ejemplos:
-
-* Validación de precios
-* Validación de stock
-* Validación de correo electrónico
-* Validación de cédula y RUC
-
-### Routes
-
-Define los endpoints REST expuestos por la aplicación.
+* Caja
+* Factura
 
 ---
 
-## Estructura del Proyecto
+## Repositories
+
+Gestionan el acceso a la base de datos mediante SQLAlchemy.
+
+Operaciones:
+
+* Crear
+* Consultar
+* Actualizar
+* Eliminar
+
+---
+
+## Services
+
+Implementan toda la lógica de negocio.
+
+Ejemplos:
+
+* Validación de stock
+* Validación de precios
+* Validación de cédula
+* Validación de RUC
+* Registro de ventas
+* Generación de facturas
+* Movimientos de caja
+* Inventario
+* Autenticación
+
+---
+
+## Routes
+
+Exponen los endpoints REST consumidos por el frontend o Swagger.
+
+---
+
+# Estructura del Proyecto
 
 ```text
 minimercado-backend/
@@ -97,150 +161,199 @@ minimercado-backend/
 app/
 │
 ├── database.py
+├── exceptions.py
 ├── main.py
+├── security.py
 │
 ├── models/
 │   └── models.py
 │
 ├── repositories/
-│   ├── producto_repository.py
-│   ├── cliente_repository.py
-│   ├── proveedor_repository.py
-│   └── venta_repository.py
 │
 ├── services/
-│   ├── producto_service.py
-│   ├── cliente_service.py
-│   ├── proveedor_service.py
-│   └── venta_service.py
 │
 ├── routes/
-│   ├── productos.py
-│   ├── clientes.py
-│   ├── proveedores.py
-│   ├── ventas.py
-│   ├── inventario.py
-│   └── reportes.py
 │
 ├── schemas/
 │   └── schemas.py
 │
-└── utils/
-    └── dependencies.py
+├── utils/
+│   └── dependencies.py
+│
+└── tests/
 ```
 
 ---
 
-## Funcionalidades Implementadas
+# Funcionalidades Implementadas
 
-### Gestión de Productos
+## Autenticación
 
-* Crear productos
-* Listar productos
-* Consultar producto por ID
-* Actualizar productos
-* Eliminar productos
+* Login JWT
+* Refresh Token
+* Usuario autenticado
+* Protección de endpoints
 
-### Gestión de Clientes
+---
 
-* Crear clientes
-* Listar clientes
-* Consultar cliente por ID
-* Actualizar clientes
-* Eliminar clientes
+## Gestión de Roles
 
-### Gestión de Proveedores
+* Crear
+* Listar
+* Actualizar
+* Eliminar
 
-* Crear proveedores
-* Listar proveedores
-* Consultar proveedor por ID
-* Actualizar proveedores
-* Eliminar proveedores
+---
 
-### Gestión de Ventas
+## Gestión de Usuarios
+
+* Crear
+* Consultar
+* Actualizar
+* Eliminar
+
+---
+
+## Gestión de Productos
+
+* Crear
+* Consultar
+* Actualizar
+* Eliminar
+* Validación de stock
+
+---
+
+## Gestión de Clientes
+
+* Crear
+* Consultar
+* Actualizar
+* Eliminar
+
+---
+
+## Gestión de Proveedores
+
+* Crear
+* Consultar
+* Actualizar
+* Eliminar
+
+---
+
+## Gestión de Ventas
 
 * Registrar ventas
-* Listar ventas
-* Consultar ventas por ID
 * Actualizar ventas
+* Consultar ventas
 * Eliminar ventas
-
-### Gestión de Inventario
-
-* Consultar stock disponible
-* Identificar productos con stock bajo
-
-### Reportes
-
-* Total de productos
-* Total de clientes
-* Total de proveedores
-* Total de ventas
-* Total de ingresos generados
+* Generación automática de factura
 
 ---
 
-## Validaciones Implementadas
+## Gestión de Caja
 
-### Productos
-
-* El precio debe ser mayor que cero.
-* El costo no puede ser negativo.
-* El stock no puede ser negativo.
-
-### Clientes
-
-* La cédula debe contener 10 dígitos.
-* El correo electrónico debe tener formato válido.
-
-### Proveedores
-
-* El RUC debe contener 13 dígitos.
-* El correo electrónico debe tener formato válido.
-
-### Ventas
-
-* El total de la venta debe ser mayor que cero.
+* Apertura
+* Cierre
+* Movimientos
 
 ---
 
-## Instalación
+## Gestión de Inventario
 
-### Clonar repositorio
+* Consultar inventario
+* Registrar ingresos
+* Registrar salidas
+* Actualización automática del stock
+
+---
+
+## Reportes
+
+* Resumen general
+* Productos más vendidos
+* Stock bajo
+* Ventas por mes
+* Top clientes
+* Inventario
+
+---
+
+# Validaciones
+
+## Productos
+
+* Precio mayor a cero.
+* Costo mayor a cero.
+* Stock no negativo.
+
+## Clientes
+
+* Cédula válida.
+* Correo válido.
+
+## Proveedores
+
+* RUC válido.
+* Correo válido.
+
+## Usuarios
+
+* Contraseña mínima de 8 caracteres.
+* Correo válido.
+* Rol obligatorio.
+
+## Ventas
+
+* Cliente existente.
+* Producto existente.
+* Stock suficiente.
+* Caja abierta.
+
+---
+
+# Instalación
+
+## Clonar repositorio
 
 ```bash
 git clone https://github.com/Redrovan/minimercado-ups-backend.git
 ```
 
-### Ingresar al proyecto
+## Ingresar al proyecto
 
 ```bash
 cd minimercado-backend
 ```
 
-### Crear entorno virtual
-
-Windows:
+## Crear entorno virtual
 
 ```bash
 python -m venv venv
 ```
 
-### Activar entorno virtual
+## Activar entorno
 
-PowerShell:
+Windows
 
 ```bash
 .\venv\Scripts\Activate.ps1
 ```
 
-### Instalar dependencias
+Linux
+
+```bash
+source venv/bin/activate
+```
+
+## Instalar dependencias
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Ejecutar servidor
+## Ejecutar servidor
 
 ```bash
 uvicorn app.main:app --reload
@@ -248,27 +361,79 @@ uvicorn app.main:app --reload
 
 ---
 
-## Documentación Swagger
+# Documentación Swagger
 
 Una vez iniciado el servidor:
 
-```text
+```
 http://127.0.0.1:8000/docs
 ```
 
-Swagger permite visualizar y probar todos los endpoints implementados en el sistema.
+Desde Swagger se pueden consumir todos los endpoints implementados.
 
 ---
 
-## Ejemplo de Reporte
+# Pruebas Unitarias
 
-Endpoint:
+El proyecto incorpora pruebas automáticas utilizando:
 
-```http
+* Pytest
+* Unittest
+* Doctest
+* Mockito
+
+Ejecutar:
+
+```bash
+python -m pytest -v
+```
+
+Resultado obtenido:
+
+```
+12 pruebas ejecutadas
+12 pruebas aprobadas
+```
+
+---
+
+# Cobertura del Código
+
+Para ejecutar el análisis de cobertura:
+
+```bash
+coverage run -m pytest
+```
+
+Generar reporte:
+
+```bash
+coverage report
+```
+
+Generar reporte HTML:
+
+```bash
+coverage html
+```
+
+Cobertura alcanzada:
+
+```
+97%
+```
+
+---
+
+# Ejemplo de Reporte
+
+Endpoint
+
+```
 GET /reportes/resumen
 ```
 
-Respuesta:
+Respuesta
 
 ```json
 {
@@ -276,20 +441,20 @@ Respuesta:
   "clientes": 1,
   "proveedores": 1,
   "ventas": 1,
-  "ingresos": 25.5
+  "ingresos": 25.50
 }
 ```
 
 ---
 
-## Repositorio del Proyecto
+# Repositorio
 
-Repositorio GitHub:
+GitHub
 
 https://github.com/Redrovan/minimercado-ups-backend
 
 ---
 
-## Conclusiones
+# Conclusiones
 
-El desarrollo de este proyecto permitió aplicar conceptos fundamentales de Ingeniería de Software relacionados con diseño arquitectónico, desarrollo de APIs REST, persistencia de datos y documentación de servicios. La utilización de FastAPI facilitó la construcción de una API moderna y documentada automáticamente mediante Swagger. Además, la implementación de una arquitectura basada en modelos, repositorios, servicios y controladores permitió mantener una adecuada separación de responsabilidades y una mejor organización del código. Finalmente, el uso de Git y GitHub proporcionó un adecuado control de versiones y seguimiento del desarrollo del proyecto.
+El desarrollo del Sistema de Gestión de Minimercado UPS permitió aplicar los principales conceptos de Ingeniería de Software relacionados con el diseño de arquitecturas por capas, desarrollo de APIs REST, persistencia de datos y control de versiones. La implementación de FastAPI facilitó la construcción de una API moderna, documentada automáticamente mediante Swagger y protegida mediante autenticación JWT. Además, la incorporación de pruebas unitarias utilizando Pytest, Unittest, Doctest y Mockito permitió verificar el correcto funcionamiento de los diferentes módulos del sistema, alcanzando una cobertura del 97% mediante Coverage.py. Finalmente, el uso de Git y GitHub permitió llevar un adecuado control de versiones y un trabajo colaborativo entre los integrantes del proyecto, obteniendo una aplicación funcional, organizada y preparada para futuras ampliaciones.
