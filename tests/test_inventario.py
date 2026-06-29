@@ -28,7 +28,7 @@ def test_inventario_flow(client):
         "producto_id": prod_id,
         "tipo_movimiento": "INGRESO",
         "cantidad": 5,
-        "motivo": "Compra a proveedor"
+        "observacion": "Compra"
     }
     response_mov = client.post("/inventario/movimientos", json=mov_ingreso)
     assert response_mov.status_code == 200

@@ -51,11 +51,10 @@ def test_usuarios_crud(client, db_session):
 
     # 6. Update user (without password change)
     update_payload = {
-        "username": "updated_tester",
-        "email": "updated_tester@gmail.com",
-        "password": "",  # no password change
-        "rol_id": rol_id,
-        "activo": True
+    "username": "updated_tester",
+    "email": "updated_tester@gmail.com",
+    "rol_id": rol_id,
+    "activo": True
     }
     response_put1 = client.put(f"/usuarios/{user_id}", json=update_payload)
     assert response_put1.status_code == 200

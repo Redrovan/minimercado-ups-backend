@@ -30,12 +30,13 @@ def test_productos_crud(client):
 
     # 4. Update product
     update_payload = {
-        "nombre": "Leche Semidescremada",
-        "categoria": "Lácteos",
-        "costo": 0.85,
-        "precio": 1.15,
-        "stock": 30,
-        "activo": True
+    "codigo_barras": "9876543210",
+    "nombre": "Leche Semidescremada",
+    "categoria": "Lácteos",
+    "costo": 0.85,
+    "precio": 1.15,
+    "stock": 30,
+    "activo": True
     }
     response_put = client.put(f"/productos/{product_id}", json=update_payload)
     assert response_put.status_code == 200

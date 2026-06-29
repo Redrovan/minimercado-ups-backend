@@ -3,12 +3,11 @@ import pytest
 def test_proveedores_crud(client):
     # 1. Create supplier
     create_payload = {
-        "ruc": "1712345678001",
-        "nombre": "Distribuidora La Favorita",
-        "telefono": "022999999",
-        "correo": "contacto@lafavorita.com",
-        "direccion": "Av. Shyris",
-        "activo": True
+    "ruc": "1712345678001",
+    "nombre": "Distribuidora La Favorita",
+    "telefono": "022999999",
+    "correo": "contacto@lafavorita.com",
+    "activo": True
     }
     response = client.post("/proveedores", json=create_payload)
     assert response.status_code == 200
@@ -29,11 +28,11 @@ def test_proveedores_crud(client):
 
     # 4. Update supplier
     update_payload = {
-        "nombre": "La Favorita S.A.",
-        "telefono": "022888888",
-        "correo": "ventas@lafavorita.com",
-        "direccion": "Av. Eloy Alfaro",
-        "activo": True
+    "ruc": "1712345678001",
+    "nombre": "La Favorita S.A.",
+    "telefono": "022888888",
+    "correo": "ventas@lafavorita.com",
+    "activo": True
     }
     response_put = client.put(f"/proveedores/{proveedor_id}", json=update_payload)
     assert response_put.status_code == 200

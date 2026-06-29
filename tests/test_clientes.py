@@ -29,11 +29,13 @@ def test_clientes_crud(client):
 
     # 4. Update client
     update_payload = {
-        "nombre": "Juan Perez Modificado",
-        "telefono": "0888888888",
-        "correo": "juan.modificado@gmail.com",
-        "activo": True
+    "cedula": "1712345678",
+    "nombre": "Juan Perez Modificado",
+    "telefono": "0888888888",
+    "correo": "juan.modificado@gmail.com",
+    "activo": True
     }
+    
     response_put = client.put(f"/clientes/{cliente_id}", json=update_payload)
     assert response_put.status_code == 200
     assert response_put.json()["nombre"] == "Juan Perez Modificado"
