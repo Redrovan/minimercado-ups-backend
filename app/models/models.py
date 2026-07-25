@@ -7,9 +7,18 @@ from sqlalchemy import Float
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+
+# Tabla asociativa: proveedor <-> producto
+proveedor_producto = Table(
+    "proveedor_producto",
+    Base.metadata,
+    Column("proveedor_id", Integer, ForeignKey("proveedores.id"), primary_key=True),
+    Column("producto_id", Integer, ForeignKey("productos.id"), primary_key=True),
+)
 
 
 class TimestampMixin:
@@ -56,6 +65,7 @@ class Producto(Base, TimestampMixin, SoftDeleteMixin):
 
     detalles_venta = relationship("DetalleVenta", back_populates="producto")
     movimientos_inventario = relationship("MovimientoInventario", back_populates="producto")
+    proveedores = relationship("Proveedor", secondary=proveedor_producto, back_populates="productos")
 
 
 class Cliente(Base, TimestampMixin, SoftDeleteMixin):
@@ -78,6 +88,8 @@ class Proveedor(Base, TimestampMixin, SoftDeleteMixin):
     nombre = Column(String(150), nullable=False, index=True)
     telefono = Column(String(20), nullable=False)
     correo = Column(String(150), nullable=False)
+
+    productos = relationship("Producto", secondary=proveedor_producto, back_populates="proveedores")
 
 
 class Venta(Base, TimestampMixin, SoftDeleteMixin):

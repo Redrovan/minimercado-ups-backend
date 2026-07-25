@@ -122,18 +122,23 @@ class ProveedorBase(BaseModel):
 
 
 class ProveedorCreate(ProveedorBase):
-    pass
+    producto_ids: list[int] = Field(default_factory=list)
 
 
 class ProveedorUpdate(ProveedorBase):
-    pass
+    producto_ids: list[int] = Field(default_factory=list)
 
 
 class ProveedorResponse(ProveedorBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    producto_ids: list[int] = []
     model_config = ConfigDict(from_attributes=True)
+
+
+class ProveedorAsignarProductos(BaseModel):
+    producto_ids: list[int]
 
 
 class VentaDetalleCreate(BaseModel):

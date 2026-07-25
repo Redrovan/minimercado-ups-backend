@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from app.schemas.schemas import PageResponse, ProveedorCreate, ProveedorResponse, ProveedorUpdate
+from app.schemas.schemas import PageResponse, ProveedorAsignarProductos, ProveedorCreate, ProveedorResponse, ProveedorUpdate
 from app.services.proveedor_service import ProveedorService
 from app.utils.dependencies import get_db
 
@@ -26,6 +26,11 @@ def obtener_proveedor(proveedor_id: int, db: Session = Depends(get_db)):
 @router.put("/{proveedor_id}", response_model=ProveedorResponse, summary="Actualizar proveedor")
 def actualizar_proveedor(proveedor_id: int, payload: ProveedorUpdate, db: Session = Depends(get_db)):
     return service.actualizar(db, proveedor_id, payload)
+
+
+@router.put("/{proveedor_id}/productos", response_model=ProveedorResponse, summary="Asignar productos a proveedor")
+def asignar_productos(proveedor_id: int, payload: ProveedorAsignarProductos, db: Session = Depends(get_db)):
+    return service.asignar_productos(db, proveedor_id, payload.producto_ids)
 
 
 @router.delete("/{proveedor_id}", summary="Desactivar proveedor")
