@@ -17,15 +17,21 @@ def test_caja_lifecycle(client):
 
     caja_id = caja["id"]
 
-    # 2. Intentar abrir otra caja
+    # 2. Obtener caja abierta
+    response_abierta = client.get("/caja/abierta")
+    assert response_abierta.status_code == 200
+    assert response_abierta.json()["id"] == caja_id
+
+    # 3. Intentar abrir otra caja (debe fallar con 400)
     response_dup = client.post(
         "/caja/abrir",
         json={"saldo_inicial": 200.0}
     )
 
-    assert response_dup.status_code == 500
+    assert response_dup.status_code == 400
+    assert response_dup.json()["message"] == "Ya existe una caja abierta"
 
-    # 3. Registrar movimiento
+    # 4. Registrar movimiento
     movement_payload = {
         "caja_id": caja_id,
         "tipo_movimiento": "INGRESO",
@@ -42,14 +48,10 @@ def test_caja_lifecycle(client):
 
     mov = response_mov.json()
 
-    # Mostrar la respuesta para verificar los campos
-    print(mov)
-
-    # Dependiendo del modelo puede devolver "tipo_movimiento"
     assert mov["tipo_movimiento"] == "INGRESO"
     assert mov["monto"] == 50.0
 
-    # 4. Consultar movimientos
+    # 5. Consultar movimientos
     response_list = client.get(f"/caja/{caja_id}/movimientos")
 
     assert response_list.status_code == 200
@@ -59,9 +61,10 @@ def test_caja_lifecycle(client):
     assert len(movs) >= 1
     assert movs[0]["monto"] == 50.0
 
-    # 5. Cerrar caja
+    # 6. Cerrar caja (ahora con body en lugar de query param)
     response_close = client.post(
-        f"/caja/{caja_id}/cerrar?saldo_final=200.0"
+        f"/caja/{caja_id}/cerrar",
+        json={"saldo_final": 200.0}
     )
 
     assert response_close.status_code == 200
@@ -71,9 +74,18 @@ def test_caja_lifecycle(client):
     assert closed_caja["estado"] == "CERRADA"
     assert closed_caja["saldo_final"] == 200.0
 
-    # 6. Intentar cerrar una caja inexistente
+    # 7. Intentar cerrar una caja inexistente
     response_close_fail = client.post(
-        "/caja/99999/cerrar?saldo_final=200.0"
+        "/caja/99999/cerrar",
+        json={"saldo_final": 200.0}
     )
 
-    assert response_close_fail.status_code == 500
+    assert response_close_fail.status_code == 400
+
+    # 8. Intentar cerrar la misma caja otra vez
+    response_close_again = client.post(
+        f"/caja/{caja_id}/cerrar",
+        json={"saldo_final": 300.0}
+    )
+
+    assert response_close_again.status_code == 400

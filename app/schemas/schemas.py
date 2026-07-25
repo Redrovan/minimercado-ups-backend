@@ -209,6 +209,10 @@ class CajaCreate(BaseModel):
     saldo_inicial: float = Field(ge=0)
 
 
+class CajaCerrarCreate(BaseModel):
+    saldo_final: float = Field(ge=0)
+
+
 class CajaResponse(BaseModel):
     id: int
     fecha_apertura: datetime

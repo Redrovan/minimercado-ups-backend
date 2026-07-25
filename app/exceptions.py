@@ -32,5 +32,13 @@ class CajaNoEncontrada(AppException):
     pass
 
 
+class CajaAbiertaError(AppException):
+    pass
+
+
+class CajaCerradaError(AppException):
+    pass
+
+
 class StockInsuficiente(AppException):
     pass
